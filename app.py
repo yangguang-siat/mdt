@@ -43,7 +43,7 @@ with st.sidebar:
         "📉 超声科专家 (Ultrasound)": "Ultrasound",
         "🩺 放射科专家 (Radiology)": "Radiology",
         "🔬 病理科专家 (Pathology)": "Pathology",
-        "🔪 乳腺外科专家 (Breast Surgery)": "BreastSurgery",
+        "🔪 妇科专家 (Gynecology)": "Gynecology",
         "💊 肿瘤内科专家 (Oncology)": "Oncology"
     }
     
@@ -95,10 +95,10 @@ if st.button("🚀 启动 MDT 专家组会诊", type="primary"):
                 for output in app.stream(initial_state):
                     for node_name, state_update in output.items():
                         node_map = {
-                            "Ultrasound": "📉 超声科专家",
+                            "Ultrasound": "📉 妇科专家",
                             "Radiology": "🩺 放射科专家",
                             "Pathology": "🔬 病理科专家",
-                            "BreastSurgery": "🔪 乳腺外科专家",
+                            "Gynecology": "🔪 妇科专家",
                             "Oncology": "💊 肿瘤内科专家",
                             "Coordinator": "📋 MDT 协调员 (生成最终报告)"
                         }
@@ -131,9 +131,9 @@ if st.button("🚀 启动 MDT 专家组会诊", type="primary"):
                     st.markdown("### 🔬 病理科意见")
                     st.markdown(final_state.get("pathology_report", "暂无"))
                     st.markdown("---")
-                if "BreastSurgery" in selected_experts:
-                    st.markdown("### 🔪 乳腺外科意见")
-                    st.markdown(final_state.get("breast_surgery_opinion", "暂无"))
+                if "Gynecology" in selected_experts:
+                    st.markdown("### 🔪 妇科意见")
+                    st.markdown(final_state.get("gynecology_opinion", "暂无"))
                     st.markdown("---")
                 if "Oncology" in selected_experts:
                     st.markdown("### 💊 肿瘤内科意见")
