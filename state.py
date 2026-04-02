@@ -7,7 +7,7 @@ class MDTState(TypedDict):
     ultrasound_report: str
     radiology_report: str
     pathology_report: str
-    breast_surgery_opinion: str
+    gynecology_opinion: str
     oncology_opinion: str
     final_mdt_report: str
     messages: Annotated[List[BaseMessage], add_messages]

@@ -16,7 +16,7 @@ with st.sidebar:
     st.header("⚙️ 大模型配置")
     st.markdown("本次会诊专家由 **Google Gemini** 模型大脑驱动。请提供一个免费的 [Google AI Studio](https://aistudio.google.com/) API Key。")
     api_key = st.text_input("Google AI Studio API Key", value="", type="password")
-    
+
     available_models = ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.5-flash"]
     if api_key and "your_api_key" not in api_key:
         try:
@@ -24,19 +24,19 @@ with st.sidebar:
             if response.status_code == 200:
                 models_data = response.json().get("models", [])
                 fetched_models = [
-                    m["name"].replace("models/", "") 
-                    for m in models_data 
+                    m["name"].replace("models/", "")
+                    for m in models_data
                     if "generateContent" in m.get("supportedGenerationMethods", [])
                 ]
                 if fetched_models:
                     preferred = [m for m in fetched_models if "gemini-2.0" in m or "gemini-1.5" in m]
                     others = [m for m in fetched_models if m not in preferred]
                     available_models = preferred + others
-        except Exception as e:
+        except Exception:
             pass
 
     model_name = st.selectbox("模型名称 (Model)", available_models, index=0)
-    
+
     st.markdown("---")
     st.markdown("### 👩‍⚕️ 选择参与会诊的专家")
     expert_options = {
@@ -46,7 +46,7 @@ with st.sidebar:
         "🔪 妇科专家 (Gynecology)": "Gynecology",
         "💊 肿瘤内科专家 (Oncology)": "Oncology"
     }
-    
+
     selected_labels = st.multiselect(
         "请选择需要的科室（MDT协调员将默认参与总结）：",
         list(expert_options.keys()),
@@ -54,7 +54,7 @@ with st.sidebar:
     )
     selected_experts = [expert_options[label] for label in selected_labels]
 
-# 乳腺癌默认病历
+# 宫颈癌默认病历
 default_case = """# 模拟病历：宫颈占位性病变
 
 ## 基本信息
@@ -82,20 +82,19 @@ if st.button("🚀 启动 MDT 专家组会诊", type="primary"):
     else:
         st.markdown("---")
         st.header("🔄 会诊实时进展")
-        
+
         status_placeholder = st.empty()
-        
+
         try:
-            # 动态传入选中的专家
             app = build_mdt_workflow(selected_experts)
             initial_state = {"patient_case": patient_case, "api_key": api_key, "model_name": model_name}
-            
+
             with st.spinner("专家组正在紧张阅片和讨论中..."):
                 status_texts = []
                 for output in app.stream(initial_state):
                     for node_name, state_update in output.items():
                         node_map = {
-                            "Ultrasound": "📉 妇科专家",
+                            "Ultrasound": "📉 超声科专家",
                             "Radiology": "🩺 放射科专家",
                             "Pathology": "🔬 病理科专家",
                             "Gynecology": "🔪 妇科专家",
@@ -105,19 +104,18 @@ if st.button("🚀 启动 MDT 专家组会诊", type="primary"):
                         cn_name = node_map.get(node_name, node_name)
                         status_texts.append(f"✅ **{cn_name}** 已完成评估并提交意见。")
                         status_placeholder.markdown("\n\n".join(status_texts))
-                        time.sleep(0.5) 
-                
+                        time.sleep(0.5)
+
                 final_state = app.invoke(initial_state)
-            
+
             st.success("🎉 MDT 会诊结束！")
-            
+
             st.markdown("---")
             st.header("🏥 MDT 综合诊疗方案")
-            # 提取科室简称
             cn_experts = [label.split(" (")[0] for label in selected_labels]
             st.info(f"（本次会诊由 **{model_name}** 模型驱动，参与科室：{', '.join(cn_experts)}）\n\n以下是协调员汇总各科室意见后出具的最终**一句话决策**：")
             st.markdown(f"### 💡 {final_state['final_mdt_report']}")
-            
+
             with st.expander("🔍 查看各科室详细原始意见 (点击展开)"):
                 if "Ultrasound" in selected_experts:
                     st.markdown("### 📉 超声科意见")
@@ -138,6 +136,6 @@ if st.button("🚀 启动 MDT 专家组会诊", type="primary"):
                 if "Oncology" in selected_experts:
                     st.markdown("### 💊 肿瘤内科意见")
                     st.markdown(final_state.get("oncology_opinion", "暂无"))
-                
+
         except Exception as e:
             st.error(f"会诊过程中发生错误: {str(e)}\n请检查 API Key 额度或网络连通性。")
