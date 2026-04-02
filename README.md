@@ -1,4 +1,4 @@
-# 涔宠吅鐧 MDT AI Agent (Breast Cancer MDT AI Agent)
+# 乳腺 MDT AI Agent (Breast Cancer MDT AI Agent)
 
 这是一个基于 **LangGraph** 和 **Streamlit** 构建的多智能体（Multi-Agent）系统，旨在模拟真实的乳腺癌多学科会诊（MDT, Multi-Disciplinary Team）流程。该系统利用 Google Gemini 大模型（通过 LangChain 接入），为乳腺癌患者提供综合的诊疗建议。
 
