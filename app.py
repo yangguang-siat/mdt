@@ -15,7 +15,7 @@ st.markdown("基于 **LangGraph** 构建的多智能体系统，支持**动态�
 with st.sidebar:
     st.header("⚙️ 大模型配置")
     st.markdown("本次会诊专家由 **Google Gemini** 模型大脑驱动。请提供一个免费的 [Google AI Studio](https://aistudio.google.com/) API Key。")
-    api_key = st.text_input("Google AI Studio API Key", value=os.getenv("GOOGLE_API_KEY", ""), type="password")
+    api_key = st.text_input("Google AI Studio API Key", value="", type="password")
     
     available_models = ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.5-flash"]
     if api_key and "your_api_key" not in api_key:
@@ -80,9 +80,6 @@ if st.button("🚀 启动 MDT 专家组会诊", type="primary"):
     elif not selected_experts:
         st.error("⚠️ 请至少在左侧选择一位专科医生参与会诊！")
     else:
-        os.environ["GOOGLE_API_KEY"] = api_key
-        os.environ["GOOGLE_MODEL_NAME"] = model_name
-        
         st.markdown("---")
         st.header("🔄 会诊实时进展")
         
@@ -91,7 +88,7 @@ if st.button("🚀 启动 MDT 专家组会诊", type="primary"):
         try:
             # 动态传入选中的专家
             app = build_mdt_workflow(selected_experts)
-            initial_state = {"patient_case": patient_case}
+            initial_state = {"patient_case": patient_case, "api_key": api_key, "model_name": model_name}
             
             with st.spinner("专家组正在紧张阅片和讨论中..."):
                 status_texts = []

@@ -11,3 +11,5 @@ class MDTState(TypedDict):
     oncology_opinion: str
     final_mdt_report: str
     messages: Annotated[List[BaseMessage], add_messages]
+    api_key: str
+    model_name: str
